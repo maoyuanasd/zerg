@@ -9,16 +9,6 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-//return [
-//    '__pattern__' => [
-//        'name' => '\w+',
-//    ],
-//    '[hello]'     => [
-//        ':id'   => ['index/hello', ['method' => 'get'], ['id' => '\d+']],
-//        ':name' => ['index/hello', ['method' => 'post']],
-//    ],
-//
-//];
 
 use think\Route;
 
@@ -28,6 +18,8 @@ use think\Route;
 
 //Route::rule('hello','sample/Test/hello','GET',['https'=>false]);
 //Route::rule('hello','sample/Test/hello','GET|POST',['https'=>false]);
-Route::post('hello/:id','sample/Test/hello');
+//Route::post('hello/:id','sample/Test/hello');
 //Route::post('hello','sample/Test/hello');
 //Route::any('hello','sample/Test/hello');
+
+Route::get('banner/:id','api/v1.Banner/getBanner');
