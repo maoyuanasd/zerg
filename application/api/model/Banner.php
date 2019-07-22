@@ -25,7 +25,6 @@ class Banner
         //表达式,数组发,闭包
         //     updete,delete,insert,find
         $result = Db::table('banner_item')
-//            ->fetchSql()
             ->where(function ($query) use ($id) {
                 $query->where('banner_id', '=', $id);
             })
