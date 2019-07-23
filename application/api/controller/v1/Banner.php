@@ -23,11 +23,12 @@ class Banner
      * */
     public  function  getBanner($id)
     {
+        //AOP 面向切面编程
         (new IDMustBePostiveInt())->goCheck();
         $banner = BannerModle::getBannerByID($id);
         if(!$banner){
             throw new BannerMissException();
         }
-        return json($banner);
+        return $banner;
     }
 }

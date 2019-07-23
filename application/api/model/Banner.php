@@ -11,24 +11,17 @@ namespace app\api\model;
 
 use think\Db;
 use think\Exception;
+use think\Model;
 
-class Banner
+class Banner extends BaseModel 
 {
+    protected $hidden=['delete_time','update_time'];
+    public function items(){
+        return $this->hasMany('BannerItem','banner_id','id');
+    }
     public static function getBannerByID($id)
     {
-//     $result=  Db::query('select*from banner_item where banner_id=?',[$id]);
-//     return $result;
-//        $result = Db::table('banner_item')
-//            ->where('banner_id', '=', $id)
-//            ->select();
-//      where('字段名','表达式','查询条件');
-        //表达式,数组发,闭包
-        //     updete,delete,insert,find
-        $result = Db::table('banner_item')
-            ->where(function ($query) use ($id) {
-                $query->where('banner_id', '=', $id);
-            })
-            ->select();
-        return $result;
+        $banner=self::with(['items','items.img'])->find($id);
+        return $banner;
     }
 }
