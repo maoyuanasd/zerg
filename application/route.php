@@ -22,4 +22,5 @@ use think\Route;
 //Route::post('hello','sample/Test/hello');
 //Route::any('hello','sample/Test/hello');
 
-Route::get('api/v1/banner/:id','api/v1.Banner/getBanner');
+Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');
+Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');
