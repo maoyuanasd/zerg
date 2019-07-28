@@ -23,9 +23,23 @@ use think\Route;
 //Route::any('hello','sample/Test/hello');
 
 Route::get('api/:version/banner/:id','api/:version.Banner/getBanner');
+
 Route::get('api/:version/theme','api/:version.Theme/getSimpleList');
 Route::get('api/:version/theme/:id','api/:version.Theme/getComplexOne');
-Route::get('api/:version/product/recent','api/:version.product/getRecent');
+
 Route::get('api/:version/product/by_category','api/:version.product/getAllInCategory');
+Route::get('api/:version/product/:id','api/:version.product/getOne',[],['id'=>'\d+']);
+Route::get('api/:version/product/recent','api/:version.product/getRecent');
+
+//Route::group('api/:version/product',function(){
+//    Route::get('/by_category','api/:version.product/getAllInCategory');
+//    Route::get('/:id','api/:version.product/getOne',[],['id'=>'\d+']);
+//    Route::get('/recent','api/:version.product/getRecent');
+//
+//});
+
 Route::get('api/:version/category/all','api/:version.category/getAllCategories');
+
 Route::post('api/:version/token/user','api/:version.Token/getToken');
+
+Route::post('api/:version/address','api/:version.Address/createOrUpdateAddress');

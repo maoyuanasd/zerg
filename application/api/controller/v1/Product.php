@@ -33,4 +33,15 @@ class Product
       }
       return $products;
   }
+  public function getOne($id){
+      (new IDMustBePostiveInt())->goCheck();
+      $product=ProductModle::getProductDetail($id);
+      if(!$product){
+          throw new ProductException();
+      }
+      return $product;
+  }
+  public function deleteOne($id){
+
+  }
 }
