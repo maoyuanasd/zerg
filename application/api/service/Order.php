@@ -35,8 +35,18 @@ class Order
         //开始创建订单
         $orderSnap=$this->snapOrder($status);
     }
-    private function createOrder(){
-         $orderNo=self::makeOrderNo();
+    private function createOrder($snap){
+         $orderNo=$this->makeOrderNo();
+         $order = new \app\api\model\Order();
+         $order->user_id=$this->uid;
+         $order->order_no=$orderNo;
+         $order->total_price=$snap['orderPrice'];
+         $order->total_count = $snap['totalCount'];
+         $order->snap_img = $snap['snapImg'];
+         $order->snap_name = $snap['snapName'];
+         $order->snap_address = $snap['snapAddress'];
+         $order->snap_items = json_encode($snap['pStatus']);
+         $order->save();
     }
     //生成订单号
     public static function makeOrderNo()
