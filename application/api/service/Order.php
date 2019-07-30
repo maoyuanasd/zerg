@@ -9,10 +9,14 @@
 namespace app\api\service;
 
 
+use app\api\model\OrderProduct;
 use app\api\model\Product;
 use app\api\model\UserAddress;
+use app\api\model\Order as OrderModel;
 use app\lib\exception\OrderException;
 use app\lib\exception\UserException;
+use think\Db;
+use think\Exception;
 
 class Order
 {
@@ -34,19 +38,42 @@ class Order
         }
         //开始创建订单
         $orderSnap=$this->snapOrder($status);
+        $order=$this->createOrder($orderSnap);
+        $order['pass']=true;
+        return $order;
     }
     private function createOrder($snap){
-         $orderNo=$this->makeOrderNo();
-         $order = new \app\api\model\Order();
-         $order->user_id=$this->uid;
-         $order->order_no=$orderNo;
-         $order->total_price=$snap['orderPrice'];
-         $order->total_count = $snap['totalCount'];
-         $order->snap_img = $snap['snapImg'];
-         $order->snap_name = $snap['snapName'];
-         $order->snap_address = $snap['snapAddress'];
-         $order->snap_items = json_encode($snap['pStatus']);
-         $order->save();
+        Db::startTrans();
+        try{
+            $orderNo=self::makeOrderNo();
+            $order = new OrderModel;
+            $order->user_id=$this->uid;
+            $order->order_no=$orderNo;
+            $order->total_price=$snap['orderPrice'];
+            $order->total_count = $snap['totalCount'];
+            $order->snap_img = $snap['snapImg'];
+            $order->snap_name = $snap['snapName'];
+            $order->snap_address = $snap['snapAddress'];
+            $order->snap_items = json_encode($snap['pStatus']);
+            $order->save();
+            $orderID=$order->id;
+            $create_time=$order->create_time;
+            foreach ($this->oProducts as &$p){
+                $p['order_id']=$orderID;
+            }
+            $orderProduct=new OrderProduct();
+            $orderProduct->saveAll($this->oProducts);
+            Db::commit();
+           return [
+                'order_no'=>$orderNo,
+                'order_id'=>$orderID,
+                'create_time'=>$create_time,
+            ];
+        }catch (Exception $ex){
+            Db::rollback();
+            throw $ex;
+        }
+
     }
     //生成订单号
     public static function makeOrderNo()
@@ -88,6 +115,13 @@ class Order
            ]);
        }
        return $userAddress->toArray();
+    }
+    public function checkOrderStock($orderID){
+        $oProducts=OrderProduct::where('order_id','=',$orderID)->select();
+        $this->oProducts=$oProducts;
+        $this->products=$this->getProductsByOrder($oProducts);
+        $status=$this->getOrderStatus();
+        return $status;
     }
     private function getOrderStatus(){
         $status=[

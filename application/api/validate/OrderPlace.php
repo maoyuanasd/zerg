@@ -22,7 +22,7 @@ class OrderPlace extends BaseValidate
         'count'=>'require|isPositiveInteger'
     ];
     protected function checkProducts($values){
-        if(is_array($values)){
+        if(!is_array($values)){
             throw new ParameterException([
                 'msg'=>'商品参数不正确'
             ]);
