@@ -56,8 +56,8 @@ class Pay
         $wxOrderData->SetTotal_fee($totalPrice*100);
         $wxOrderData->SetBody('零食商贩');
         $wxOrderData->SetOpenid($openid);
-        $wxOrderData->SetNotify_url('');
-        $wxConfig=new \WxPayConfig();
+        $wxOrderData->SetNotify_url(config('secure.back_back_url'));
+        $wxConfig= new \WxPayConfig();
        return $this->getPaySignature($wxConfig,$wxOrderData);
     }
     private function getPaySignature($wxConfig,$wxOrderData){
@@ -68,7 +68,22 @@ class Pay
             Log::record('获取预支付订单失败','error');
         }
         $this->recordPreOrder($wxOrder);
-        return null;
+        $signature=$this->sign($wxConfig,$wxOrderData);
+        return $signature;
+    }
+    private function sign($wxConfig,$wxOrder){
+        $jsApiPayData=new \WxPayJsApiPay();
+        $jsApiPayData->SetAppid(config('wx.app_id'));
+        $jsApiPayData->SetTimeStamp((string)time());
+        $rand=md5(time().mt_rand(0,1000));
+        $jsApiPayData->SetNonceStr($rand);
+        $jsApiPayData->SetPackage('prepay_id='.$wxOrder['prepay_id']);
+        $jsApiPayData->SetSignType('md5');
+        $sign=$jsApiPayData->MakeSign($wxConfig);
+        $rawValues=$jsApiPayData->GetValues();
+        $rawValues['paySign']=$sign;
+        unset($rawValues['appId']);
+        return $rawValues;
     }
     private function recordPreOrder($wxOrder){
         OrderModel::where('id','=',$this->orderID)->update(['prepay_id'=>$wxOrder['prepay_id']]);
