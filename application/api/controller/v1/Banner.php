@@ -25,6 +25,7 @@ class Banner
     {
         //AOP 面向切面编程
         (new IDMustBePostiveInt())->goCheck();
+        //php think optimize:route
         $banner = BannerModle::getBannerByID($id);
         if(!$banner){
             throw new BannerMissException();

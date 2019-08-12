@@ -35,6 +35,20 @@ class Order extends BaseController
     // 微信会返回给我们一个支付的结果(异步)
     // 成功:也需要进行库存量的检查
     // 成功:进行库存量的扣除 失败:返回一个支付失败的结果
+
+    //做一次库存量检测
+    //创建订单
+    //减库存--预扣除库存
+    //if pay 真正的减库存
+    //在一定的时间内没有去支付这个订单,我们需要还原库存
+
+    //在php重写定时器,每隔1min去遍历数据库,找到超时的订单
+    //订单,把这些订单给还原库存
+    //linux crontab
+
+    //任务队列
+    //每单用户创建订单,就把订单任务加入到任务队列里
+    //redis
     protected $beforeActionList=[
         'checkExclusiveScope'=>['only'=>'placeOrder'],
         'checkPrimaryScope'=>['only'=>'getDetail,getSummaryByUser']
@@ -63,6 +77,7 @@ class Order extends BaseController
      * @throws \app\lib\exception\ParameterException
      */
     public function getSummary($page=1, $size = 20){
+
         (new PagingParameter())->goCheck();
 //        $uid = Token::getCurrentUid();
         $pagingOrders = OrderModel::getSummaryByPage($page, $size);
